@@ -11,9 +11,8 @@ import { Input } from './ui/input';
 import Image from 'next/image';
 import { updateDocument } from '@/lib/actions/room.actions';
 
-const CollaborativeRoom = ({ roomId, roomMetadata }: CollaborativeRoomProps) => {
-    const currentUserType = 'editor';
-
+const CollaborativeRoom = ({ roomId, roomMetadata, users, currentUserType }: CollaborativeRoomProps) => {
+    
     const [editing, setEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [documentTitle, setDocumentTitle] = useState(roomMetadata?.title ?? 'Untitled');
@@ -21,14 +20,14 @@ const CollaborativeRoom = ({ roomId, roomMetadata }: CollaborativeRoomProps) => 
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLDivElement>(null);
 
-    const updateTitleHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => { 
-        if(e.key === 'Enter') {
+    const updateTitleHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
             setLoading(true);
             try {
-                if(documentTitle !== roomMetadata?.title) {
+                if (documentTitle !== roomMetadata?.title) {
                     const updatedDocument = await updateDocument(roomId, documentTitle);
 
-                    if(updatedDocument) {
+                    if (updatedDocument) {
                         setEditing(false);
                     }
                 }
@@ -42,7 +41,7 @@ const CollaborativeRoom = ({ roomId, roomMetadata }: CollaborativeRoomProps) => 
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
                 setEditing(false);
                 updateDocument(roomId, documentTitle);
             }
@@ -56,7 +55,7 @@ const CollaborativeRoom = ({ roomId, roomMetadata }: CollaborativeRoomProps) => 
     }, [roomId, documentTitle])
 
     useEffect(() => {
-        if(editing && inputRef.current) {
+        if (editing && inputRef.current) {
             inputRef.current.focus();
         }
     }, [editing])
@@ -111,7 +110,7 @@ const CollaborativeRoom = ({ roomId, roomMetadata }: CollaborativeRoomProps) => 
                             </SignedIn>
                         </div>
                     </Header>
-                    <Editor />
+                    <Editor roomId={roomId} currentUserType={currentUserType}/>
                 </div>
             </ClientSideSuspense>
         </RoomProvider>
